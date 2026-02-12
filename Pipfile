@@ -8,12 +8,12 @@ flask = "*"
 psycopg2 = "*"
 flask-dotenv = "*"
 pyjwt = "*"
-python-dotenv = "*"
 bcrypt = "*"
 flask-cors = "*"
 cloudinary = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.14"

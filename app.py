@@ -1,13 +1,22 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g
 from flask_cors import CORS
 import os
 import psycopg2
 import psycopg2.extras
 from auth_middleware import token_required
 from auth_blueprint import authentication_blueprint
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 app = Flask(__name__)
+@app.route("/")
+def index():
+    return "Hello, world!"
+
+
+
 CORS(app, resources={
      r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 app.register_blueprint(authentication_blueprint)
