@@ -10,11 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-CORS(
-    app,
-    resources={r"/*": {"origins": "http://localhost:5173"}},
-    supports_credentials=True
-)
+CORS(app)
 
 app.register_blueprint(authentication_blueprint)
 app.register_blueprint(boards_blueprint)
@@ -27,4 +23,4 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run()
