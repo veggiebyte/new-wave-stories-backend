@@ -4,12 +4,64 @@ import psycopg2.extras
 from auth_middleware import token_required
 from db_helpers import get_db_connection
 
+import os
+from anthropic import Anthropic
+
 boards_blueprint = Blueprint("boards_blueprint", __name__)
+
+# Rate limiting for story generation
+story_counts = {}
 
 
 # -----------------------
 # BOARDS
 # -----------------------
+
+@boards_blueprint.route("/boards/<board_id>/generate-story", methods=["POST"])
+@token_required
+def generate_story(board_id):
+    user_id = g.user["id"]
+    
+    # Limit: 5 stories per user
+    if story_counts.get(user_id, 0) >= 5:
+        return jsonify({"err": "Story generation limit reached"}), 429
+    
+    connection = get_db_connection()
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cursor.execute(
+        "SELECT * FROM boards WHERE id = %s AND user_id = %s;",
+        (board_id, g.user["id"])
+    )
+    board = cursor.fetchone()
+    
+    if not board:
+        connection.close()
+        return jsonify({"err": "Board not found"}), 404
+    
+    client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    
+    prompt = f"Write a short, atmospheric 2-3 sentence scene set in a {board['city']} nightclub in the early 1980s new wave era. The vibe is {board['vibe']}. The song playing is {board['song']}. Focus on the mood, the crowd, and the energy of the night."
+    
+    message = client.messages.create(
+        model="claude-3-haiku-20240307",
+        max_tokens=150,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    story = message.content[0].text
+    
+    cursor.execute(
+        "UPDATE boards SET story = %s WHERE id = %s RETURNING *;",
+        (story, board_id)
+    )
+    updated = cursor.fetchone()
+    connection.commit()
+    connection.close()
+    
+    story_counts[user_id] = story_counts.get(user_id, 0) + 1
+    
+    return jsonify(updated), 200
 
 @boards_blueprint.route("/boards")
 @token_required
