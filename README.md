@@ -1,33 +1,3 @@
-# Flask JWT Auth Template
+# New Wave Stories — Back End
 
-## About
-
-This repo is a Flask JWT Auth template meant to be paired with a front-end app utilizing JWT authentication. It includes a basic user model, routes for user registration and login, and a JWT token generator.
-
-## Getting started
-
-Fork and clone this repository to your local machine.
-
-After moving into the cloned directory, activate a new virtual environment:
-
-```bash
-pipenv shell
-```
-
-Install the dependencies:
-
-```bash
-pipenv install
-```
-
-Run the Flask app:
-
-```bash
-python app.py
-```
-
-To deactivate the virtual environment when you're done, run:
-
-```bash
-exit
-```
+For full project details, visit the front-end repository: https://github.com/veggiebyte/new-wave-stories-frontend
