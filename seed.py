@@ -54,7 +54,6 @@ def seed():
 
     connection.commit()
     connection.close()
-    print(f"Seeded {len(items)} catalog items.")
 
 if __name__ == "__main__":
     seed()
